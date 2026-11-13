@@ -2996,13 +2996,13 @@ window.KHB_EMTP_QUIZ = {
             "A": "獲取資訊（Gather）。",
             "B": "評估原因（Assess）。",
             "C": "分析原因（Analyze）。",
-            "D": "結論重點（Summary）。 \n～所有試題均已完成，辛苦了！～"
+            "D": "結論重點（Summary）。"
           },
           "pdf_page": 18,
           "needs_review": false,
           "review_reasons": [],
           "figures": [],
-          "explanation": "<div class=\"exp-container\">\n  <div class=\"exp-header\">\n    <span class=\"exp-badge\">緊急救護技術的教學技巧 · 第 100 題重點解析</span>\n    <span class=\"exp-verify-badge\">⚠️ 需人工查證</span>\n  </div>\n  <div class=\"exp-refs\">\n    <div class=\"exp-ref-item primary\">\n      <span class=\"ref-tag\">第一順位</span>\n      <span class=\"ref-source\"><b>《第三版大白》CH60 《緊急救護技術的教學技巧》</b> 第 10 頁</span>\n    </div>\n    <div class=\"exp-ref-item secondary\">\n      <span class=\"ref-tag\">第二順位</span>\n      <span class=\"ref-source\">衛生福利部高級救護技術員標準處置規範與急診臨床指引</span>\n    </div>\n  </div>\n  <p class=\"exp-summary\"><strong>本題正確官方答案為 (B)。</strong>該選項敘述符合教科書標準評估與處置規範。</p>\n  <ul class=\"exp-list\">\n    <li><strong>(A) </strong>：獲取資訊（Gather）。</li>\n    <li><strong>(B) <strong>【官方答案】</strong></strong>：評估原因（Assess）。</li>\n    <li><strong>(C) </strong>：分析原因（Analyze）。</li>\n    <li><strong>(D) </strong>：結論重點（Summary）。 \n～所有試題均已完成，辛苦了！～</li>\n  </ul>\n</div>",
+          "explanation": "<div class=\"exp-container\">\n  <div class=\"exp-header\">\n    <span class=\"exp-badge\">緊急救護技術的教學技巧 · 第 100 題重點解析</span>\n    <span class=\"exp-verify-badge\">⚠️ 需人工查證</span>\n  </div>\n  <div class=\"exp-refs\">\n    <div class=\"exp-ref-item primary\">\n      <span class=\"ref-tag\">第一順位</span>\n      <span class=\"ref-source\"><b>《第三版大白》CH60 《緊急救護技術的教學技巧》</b> 第 10 頁</span>\n    </div>\n    <div class=\"exp-ref-item secondary\">\n      <span class=\"ref-tag\">第二順位</span>\n      <span class=\"ref-source\">衛生福利部高級救護技術員標準處置規範與急診臨床指引</span>\n    </div>\n  </div>\n  <p class=\"exp-summary\"><strong>本題正確官方答案為 (B)。</strong>該選項敘述符合教科書標準評估與處置規範。</p>\n  <ul class=\"exp-list\">\n    <li><strong>(A) </strong>：獲取資訊（Gather）。</li>\n    <li><strong>(B) <strong>【官方答案】</strong></strong>：評估原因（Assess）。</li>\n    <li><strong>(C) </strong>：分析原因（Analyze）。</li>\n    <li><strong>(D) </strong>：結論重點（Summary）。</li>\n  </ul>\n</div>",
           "pdfPage": 18,
           "needsReview": false,
           "reviewReasons": [],
