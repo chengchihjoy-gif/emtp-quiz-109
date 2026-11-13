@@ -4,16 +4,16 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>EMT-P 考古題練習</title>
-<meta name="description" content="衛生福利部 109 年度高級救護技術員甄試筆試題目卷練習（工作坊示範）">
+<meta name="description" content="衛生福利部 109 年度高級救護技術員甄試筆試題目卷練習">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <header class="topbar">
   <div class="wrap">
-    <span class="eyebrow">KHB-01 · AI 工作坊示範</span>
-    <h1>EMT-P 甄試考古題練習</h1>
-    <p class="sub">高級救護技術員甄試筆試 ｜ <span id="year-label">…</span> ｜ 共 <b id="total">…</b> 題</p>
+    <span class="eyebrow">EMT-P 高級救護技術員甄試筆試</span>
+    <h1>109 年度甄試筆試題目練習</h1>
+    <p class="sub">衛生福利部 109 年度高級救護技術員甄試筆試題目卷 ｜ 共 <b id="total">100</b> 題 ｜ 附《第三版大白書》詳解</p>
   </div>
 </header>
 
@@ -24,27 +24,121 @@
     <p class="links" id="source-links"></p>
   </aside>
 
-  <nav id="years" class="years" aria-label="選擇年度"></nav>
+  <nav id="years" class="years hidden" aria-label="選擇年度"></nav>
 
   <section class="panel" id="quiz">
     <div class="toolbar">
-      <label class="jump">題號
+      <label class="jump">導覽
         <select id="jump" aria-label="跳到第幾題"></select>
       </label>
+      <div class="user-chip" id="user-chip" title="點擊修改測試人員姓名">
+        <span class="user-chip-label">測試人員：</span>
+        <span class="user-chip-name" id="top-user-name">未填寫</span>
+      </div>
       <span id="score" class="score" aria-live="polite"></span>
     </div>
     <div class="bar"><div id="bar-fill"></div></div>
 
-    <p id="origin" class="origin"></p>
-    <p id="review" class="review hidden"></p>
-    <p id="stem" class="stem"></p>
-    <div id="figures" class="figures"></div>
-    <div id="choices" class="choices" role="group" aria-label="選項"></div>
+    <!-- 第一頁：測試人員姓名填寫與測驗說明 -->
+    <div id="view-intro" class="intro-page">
+      <div class="intro-header">
+        <span class="intro-tag">第一頁 · 測驗前基本資料</span>
+        <h2>歡迎參加 109 年度高級救護技術員甄試筆試模擬測驗</h2>
+        <p class="intro-desc">本測驗收錄衛福部 109 年度全部 100 題筆試試題（含複選給分、勉予給分與心電圖原題截圖），並提供《第三版大白書》章節與頁碼起草詳解。</p>
+      </div>
 
-    <div id="feedback" class="feedback hidden" aria-live="polite"></div>
-    <div id="explain-box" class="explain-card hidden" aria-live="polite"></div>
+      <div class="name-box">
+        <label for="input-examinee-name" class="name-box-label">👤 測試人員姓名（必填）：</label>
+        <div class="name-box-row">
+          <input type="text" id="input-examinee-name" class="name-input" placeholder="請在此輸入您的姓名（例如：陳大明）" maxlength="30" />
+          <button type="button" id="btn-save-name" class="btn primary">儲存姓名</button>
+        </div>
+        <p class="name-box-hint" id="name-save-status">💡 填寫姓名後將自動綁定測驗紀錄，完成所有試題後將列印於結算頁面中。</p>
+      </div>
 
-    <div class="actions">
+      <div class="intro-rules">
+        <h3>📋 作答指引與規則說明</h3>
+        <ul>
+          <li><b>題型配置</b>：全卷共 100 題單選/複選題，每題 1 分，滿分 100 分。</li>
+          <li><b>官方特殊給分</b>：第 22、57、92 題為官方送分題；第 10、96 題包含勉予給分；第 55、69、74、83、91 題依官方公佈複選給分。</li>
+          <li><b>詳解查詢</b>：作答後可隨時點擊「💡 查看本題詳解」查閱大白書章節出處與選項分析。</li>
+          <li><b>自動保存</b>：作答進度隨時儲存於您的瀏覽器中，隨時中斷皆可繼續。</li>
+        </ul>
+      </div>
+
+      <div class="intro-btn-group">
+        <button type="button" id="btn-start-quiz" class="btn primary btn-lg">開始作答（前往第 1 題）→</button>
+        <button type="button" id="btn-resume-quiz" class="btn secondary btn-lg hidden">繼續上次進度 →</button>
+      </div>
+    </div>
+
+    <!-- 試題內容頁（1~100題） -->
+    <div id="view-question" class="hidden">
+      <p id="origin" class="origin"></p>
+      <p id="review" class="review hidden"></p>
+      <p id="stem" class="stem"></p>
+      <div id="figures" class="figures"></div>
+      <div id="choices" class="choices" role="group" aria-label="選項"></div>
+
+      <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+      <div id="explain-box" class="explain-card hidden" aria-live="polite"></div>
+    </div>
+
+    <!-- 增加的最後一頁：測驗完成結算頁 -->
+    <div id="view-result" class="result-page hidden">
+      <div class="congrat-card">
+        <div class="congrat-badge">🎉 測驗完成</div>
+        <h2 class="congrat-title">～所有試題均已完成，辛苦了！～</h2>
+        <p class="congrat-sub">衛生福利部 109 年度高級救護技術員甄試筆試 · 測驗結果總結</p>
+      </div>
+
+      <div class="result-summary-grid">
+        <div class="summary-box user-info-box">
+          <div class="summary-label">測試人員</div>
+          <div class="summary-value" id="result-examinee-name">（未填寫）</div>
+          <button type="button" id="btn-edit-name" class="btn-text">✏️ 修改姓名</button>
+        </div>
+
+        <div class="summary-box score-box">
+          <div class="summary-label">測驗得分</div>
+          <div class="summary-score"><span id="result-total-score">0</span> <span class="score-unit">/ 100 分</span></div>
+          <div class="summary-rate" id="result-pass-rate">正確率 0%</div>
+        </div>
+      </div>
+
+      <div class="stats-card">
+        <div class="stat-pill stat-ok">
+          <span class="stat-num" id="stat-ok-count">0</span>
+          <span class="stat-text">官方完全正確</span>
+        </div>
+        <div class="stat-pill stat-alt">
+          <span class="stat-num" id="stat-alt-count">0</span>
+          <span class="stat-text">勉予給分</span>
+        </div>
+        <div class="stat-pill stat-bad">
+          <span class="stat-num" id="stat-bad-count">0</span>
+          <span class="stat-text">答錯題數</span>
+        </div>
+        <div class="stat-pill stat-empty">
+          <span class="stat-num" id="stat-unanswered-count">0</span>
+          <span class="stat-text">尚未作答</span>
+        </div>
+      </div>
+
+      <div id="review-mistakes-container" class="mistakes-container">
+        <h3>📝 錯題與未答快速複習</h3>
+        <p class="mistakes-hint">點選下方題號按鈕即可直接跳至該題檢視大白書詳解與正確解答：</p>
+        <div id="mistakes-list" class="mistakes-list"></div>
+      </div>
+
+      <div class="result-btn-group">
+        <button type="button" id="btn-review-q1" class="btn">🔍 從第 1 題回顧詳解</button>
+        <button type="button" id="btn-restart-quiz" class="btn danger">🔄 清除紀錄重新測驗</button>
+      </div>
+    </div>
+
+    <!-- 底部控制按鈕 -->
+    <div class="actions" id="quiz-actions">
       <button id="prev" class="btn" type="button">← 上一題</button>
       <button id="toggle-explain" class="btn secondary" type="button">💡 查看本題詳解</button>
       <button id="next" class="btn primary" type="button">下一題 →</button>
@@ -54,9 +148,8 @@
 </main>
 
 <footer class="foot wrap">
-  <p>題目、選項與答案由腳本從官方 PDF 擷取，答案一律照答案卷；括號內為勉予給分。本站<b>附 AI 起草詳解（標註需人工查證）</b>。</p>
-  <p>含圖的題目（心電圖、波形、照片）另附原卷截圖，標「需人工確認」。如有出入，以原始 PDF 為準。</p>
-  <p class="tiny">工作坊示範用，非官方題庫。</p>
+  <p>題目、選項與答案由腳本從官方 PDF 擷取，答案一律照答案卷；括號內為勉予給分。本站<b>附 AI 起草詳解（引述大白書第 3 版章節與頁碼，標註需人工查證）</b>。</p>
+  <p>含圖題目（心電圖、波形）另附原卷高解析截圖。如有出入，以衛福部原始 PDF 為準。</p>
 </footer>
 
 <script src="questions-data.js"></script>
