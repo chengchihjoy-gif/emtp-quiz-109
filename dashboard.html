@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMT-P 測驗後台儀表板 · 考生數據統計</title>
+<style>
+:root {
+  --paper: #f8fafc;
+  --card: #ffffff;
+  --ink: #0f172a;
+  --ink-soft: #64748b;
+  --line: #e2e8f0;
+  --accent: #c05621;
+  --accent-soft: #e08a5a;
+  --accent-light: #fff7ed;
+  --ok: #16a34a;
+  --ok-bg: #dcfce7;
+  --alt: #ca8a04;
+  --alt-bg: #fef9c3;
+  --bad: #dc2626;
+  --bad-bg: #fee2e2;
+  --primary: #2563eb;
+  --primary-light: #eff6ff;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
+  line-height: 1.6;
+}
+.wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+/* Top Header */
+.header {
+  background: #1c2b3a;
+  color: #fff;
+  padding: 20px 0;
+  border-bottom: 3px solid var(--accent);
+}
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.header h1 {
+  margin: 0;
+  font-size: 22px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.badge-live {
+  background: #10b981;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 12px;
+  letter-spacing: .05em;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.badge-live::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  background: #fff;
+  border-radius: 50%;
+  display: inline-block;
+  animation: pulse 1.5s infinite;
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(0.8); }
+}
+.header-actions {
+  display: flex;
+  gap: 10px;
+}
+.btn {
+  font: inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: .15s;
+}
+.btn:hover { background: #f1f5f9; }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn.primary:hover { background: #a8471a; }
+
+/* Metrics Cards */
+.metrics-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  margin: 24px 0;
+}
+.metric-card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 20px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+}
+.metric-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  margin-bottom: 6px;
+}
+.metric-val {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--ink);
+  font-family: ui-monospace, Menlo, monospace;
+  line-height: 1.1;
+}
+.metric-sub {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-top: 6px;
+}
+
+/* Sections & Grid */
+.charts-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1fr;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+@media (max-width: 900px) {
+  .charts-grid { grid-template-columns: 1fr; }
+}
+.panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 22px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+  margin-bottom: 24px;
+}
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 18px;
+}
+.panel-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Score Distribution Bar Chart (CSS-based) */
+.dist-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.dist-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 13.5px;
+}
+.dist-label {
+  width: 90px;
+  font-weight: 600;
+  color: var(--ink-soft);
+  text-align: right;
+  flex-none: true;
+}
+.dist-bar-track {
+  flex: 1;
+  background: #f1f5f9;
+  height: 24px;
+  border-radius: 4px;
+  overflow: hidden;
+  display: flex;
+}
+.dist-bar-fill {
+  background: var(--accent);
+  height: 100%;
+  border-radius: 4px;
+  transition: width .4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 8px;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+}
+.dist-count {
+  width: 60px;
+  font-family: ui-monospace, Menlo, monospace;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+/* Hardest Questions Ranking */
+.ranking-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  max-height: 280px;
+  overflow-y: auto;
+}
+.ranking-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  background: #f8fafc;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font-size: 14px;
+}
+.ranking-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.rank-badge {
+  width: 22px;
+  height: 22px;
+  background: #cbd5e1;
+  color: #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 700;
+}
+.rank-badge.top1 { background: #ef4444; }
+.rank-badge.top2 { background: #f97316; }
+.rank-badge.top3 { background: #eab308; }
+.wrong-rate {
+  font-family: ui-monospace, Menlo, monospace;
+  font-weight: 700;
+  color: var(--bad);
+}
+
+/* Submissions Table */
+.toolbar-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 16px;
+}
+.search-input {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 14px;
+  width: 280px;
+  max-width: 100%;
+  outline: none;
+}
+.search-input:focus { border-color: var(--accent); }
+
+.table-responsive {
+  overflow-x: auto;
+}
+table.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  text-align: left;
+}
+table.data-table th, table.data-table td {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--line);
+}
+table.data-table th {
+  background: #f8fafc;
+  color: var(--ink-soft);
+  font-weight: 600;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: .03em;
+}
+table.data-table tr:hover td { background: #f8fafc; }
+.tag-score {
+  font-family: ui-monospace, Menlo, monospace;
+  font-weight: 700;
+  font-size: 15px;
+}
+.tag-score.pass { color: var(--ok); }
+.tag-score.fail { color: var(--bad); }
+
+.pill {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+.pill-ok { background: var(--ok-bg); color: var(--ok); }
+.pill-alt { background: var(--alt-bg); color: var(--alt); }
+.pill-bad { background: var(--bad-bg); color: var(--bad); }
+
+/* Modal */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 1000;
+}
+.modal-overlay.hidden { display: none; }
+.modal-content {
+  background: #fff;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 700px;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.modal-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.modal-body {
+  padding: 20px;
+  overflow-y: auto;
+  font-size: 14px;
+}
+.modal-close {
+  background: none;
+  border: none;
+  font-size: 22px;
+  cursor: pointer;
+  color: var(--ink-soft);
+}
+.picks-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+  gap: 8px;
+  margin-top: 14px;
+}
+.pick-cell {
+  border: 1px solid var(--line);
+  padding: 6px;
+  border-radius: 6px;
+  text-align: center;
+  font-family: ui-monospace, Menlo, monospace;
+}
+.pick-cell .q-no { font-size: 11px; color: var(--ink-soft); }
+.pick-cell .q-ans { font-size: 14px; font-weight: 700; }
+.pick-cell.is-ok { background: var(--ok-bg); border-color: #86efac; color: var(--ok); }
+.pick-cell.is-alt { background: var(--alt-bg); border-color: #fde047; color: var(--alt); }
+.pick-cell.is-bad { background: var(--bad-bg); border-color: #fca5a5; color: var(--bad); }
+.pick-cell.is-none { background: #f1f5f9; color: #94a3b8; }
+
+.empty-state {
+  text-align: center;
+  padding: 40px 20px;
+  color: var(--ink-soft);
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="wrap header-row">
+    <div>
+      <h1>📊 EMT-P 甄試考古題 · 後台數據儀表板 <span class="badge-live">即時連線</span></h1>
+      <p style="margin: 4px 0 0; font-size: 13.5px; opacity: 0.85;">衛生福利部 109 年度高級救護技術員甄試筆試 · 考生作答雲端資料庫</p>
+    </div>
+    <div class="header-actions">
+      <a href="index.html" class="btn">← 返回測驗前端</a>
+      <button type="button" id="btn-refresh" class="btn">🔄 重新整理</button>
+      <button type="button" id="btn-export-csv" class="btn primary">📥 匯出 CSV 報表</button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <!-- Summary Cards -->
+  <section class="metrics-grid">
+    <div class="metric-card">
+      <div class="metric-title">總測驗人次</div>
+      <div class="metric-val" id="val-total-count">--</div>
+      <div class="metric-sub">累計提交卷數</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-title">全體平均得分</div>
+      <div class="metric-val" id="val-avg-score">--</div>
+      <div class="metric-sub">滿分 100 分</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-title">最高得分 / 最低得分</div>
+      <div class="metric-val" id="val-min-max">-- / --</div>
+      <div class="metric-sub" id="val-pass-rate">及格率（≥60分）：--%</div>
+    </div>
+    <div class="metric-card">
+      <div class="metric-title">資料庫狀態</div>
+      <div class="metric-val" style="font-size: 20px; color: var(--ok); margin-top: 6px;">🟢 連線正常</div>
+      <div class="metric-sub">Supabase PostgreSQL</div>
+    </div>
+  </section>
+
+  <!-- Charts & Analytics -->
+  <section class="charts-grid">
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">📈 考生得分區間分佈</h2>
+      </div>
+      <div class="dist-chart" id="dist-chart">
+        <div class="empty-state">載入數據中...</div>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-header">
+        <h2 class="panel-title">⚠️ 全卷最易錯題目 Top 5</h2>
+      </div>
+      <div class="ranking-list" id="hardest-list">
+        <div class="empty-state">載入數據中...</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detailed Examinee Table -->
+  <section class="panel">
+    <div class="panel-header">
+      <h2 class="panel-title">📋 考生完整作答名冊</h2>
+      <span style="font-size: 13.5px; color: var(--ink-soft);" id="table-count-label">共 0 筆紀錄</span>
+    </div>
+
+    <div class="toolbar-row">
+      <input type="text" id="search-input" class="search-input" placeholder="🔍 搜尋考生姓名..." />
+      <div style="font-size: 13px; color: var(--ink-soft);">
+        依作答提交時間倒序排列
+      </div>
+    </div>
+
+    <div class="table-responsive">
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>作答時間</th>
+            <th>考生姓名</th>
+            <th>總得分</th>
+            <th>正確率</th>
+            <th>答對</th>
+            <th>勉予給分</th>
+            <th>答錯</th>
+            <th>未答</th>
+            <th>操作</th>
+          </tr>
+        </thead>
+        <tbody id="submissions-tbody">
+          <tr><td colspan="9" class="empty-state">載入中...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+</main>
+
+<!-- Details Modal -->
+<div id="detail-modal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3 id="modal-title" style="margin: 0;">考生作答明細</h3>
+      <button type="button" class="modal-close" id="modal-close">&times;</button>
+    </div>
+    <div class="modal-body">
+      <div id="modal-summary" style="margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 8px;"></div>
+      <h4 style="margin: 0 0 6px;">全 100 題作答矩陣 (點選題目可對照)：</h4>
+      <div style="display: flex; gap: 10px; font-size: 12px; margin-bottom: 10px;">
+        <span class="pill pill-ok">■ 完全答對</span>
+        <span class="pill pill-alt">■ 勉予給分</span>
+        <span class="pill pill-bad">■ 答錯</span>
+        <span class="pill" style="background:#f1f5f9; color:#64748b;">■ 未作答</span>
+      </div>
+      <div id="modal-picks-grid" class="picks-grid"></div>
+    </div>
+  </div>
+</div>
+
+<script src="questions-data.js"></script>
+<script>
+'use strict';
+
+const SUPABASE_CONFIG = {
+  url: 'https://bqonwayoxmzdqmbmvfrv.supabase.co',
+  anonKey: 'sb_publishable_LvitwPetqbj1dgROZMrdqA_NohAGmUX'
+};
+
+const OFFICIAL_DATA = window.KHB_EMTP_QUIZ ? window.KHB_EMTP_QUIZ.years['109'] : null;
+let allSubmissions = [];
+
+const $ = (id) => document.getElementById(id);
+
+async function fetchSubmissions() {
+  try {
+    const url = `${SUPABASE_CONFIG.url}/rest/v1/quiz_submissions?select=*&order=created_at.desc`;
+    const resp = await fetch(url, {
+      headers: {
+        'apikey': SUPABASE_CONFIG.anonKey,
+        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
+        'Accept': 'application/json'
+      }
+    });
+    if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+    allSubmissions = await resp.json();
+    renderAll();
+  } catch (err) {
+    console.error('Fetch error:', err);
+    $('submissions-tbody').innerHTML = `<tr><td colspan="9" style="text-align:center; color:red; padding: 20px;">載入失敗: ${err.message}</td></tr>`;
+  }
+}
+
+function renderAll() {
+  renderMetrics();
+  renderDistribution();
+  renderHardestQuestions();
+  renderTable(allSubmissions);
+}
+
+function renderMetrics() {
+  const count = allSubmissions.length;
+  $('val-total-count').textContent = count;
+  if (count === 0) {
+    $('val-avg-score').textContent = '0';
+    $('val-min-max').textContent = '0 / 0';
+    $('val-pass-rate').textContent = '及格率：0%';
+    return;
+  }
+  const scores = allSubmissions.map(s => Number(s.total_score) || 0);
+  const sum = scores.reduce((a, b) => a + b, 0);
+  const avg = (sum / count).toFixed(1);
+  const max = Math.max(...scores);
+  const min = Math.min(...scores);
+  const passCount = scores.filter(s => s >= 60).length;
+  const passRate = Math.round((passCount / count) * 100);
+
+  $('val-avg-score').textContent = avg;
+  $('val-min-max').textContent = `${max} / ${min}`;
+  $('val-pass-rate').textContent = `及格率（≥60分）：${passRate}%（${passCount}/${count} 人）`;
+}
+
+function renderDistribution() {
+  const bins = [
+    { label: '90 ~ 100 分', min: 90, max: 100, count: 0 },
+    { label: '80 ~ 89 分',  min: 80, max: 89,  count: 0 },
+    { label: '70 ~ 79 分',  min: 70, max: 79,  count: 0 },
+    { label: '60 ~ 69 分',  min: 60, max: 69,  count: 0 },
+    { label: '60 分以下',   min: 0,  max: 59,  count: 0 },
+  ];
+
+  allSubmissions.forEach(s => {
+    const sc = Number(s.total_score) || 0;
+    for (const b of bins) {
+      if (sc >= b.min && sc <= b.max) {
+        b.count++;
+        break;
+      }
+    }
+  });
+
+  const total = allSubmissions.length || 1;
+  const html = bins.map(b => {
+    const pct = Math.round((b.count / total) * 100);
+    return `
+      <div class="dist-row">
+        <span class="dist-label">${b.label}</span>
+        <div class="dist-bar-track">
+          <div class="dist-bar-fill" style="width: ${Math.max(pct, b.count > 0 ? 8 : 0)}%;">
+            ${b.count > 0 ? `${b.count} 人` : ''}
+          </div>
+        </div>
+        <span class="dist-count">${pct}%</span>
+      </div>
+    `;
+  }).join('');
+
+  $('dist-chart').innerHTML = html;
+}
+
+function renderHardestQuestions() {
+  if (!OFFICIAL_DATA || allSubmissions.length === 0) {
+    $('hardest-list').innerHTML = '<div class="empty-state">尚無足夠作答統計數據</div>';
+    return;
+  }
+
+  const questions = OFFICIAL_DATA.questions;
+  const questionMistakes = {}; // { '109-001': count }
+
+  allSubmissions.forEach(sub => {
+    const picks = sub.picks || {};
+    questions.forEach(q => {
+      const p = picks[q.id];
+      const isOk = q.answer.includes(p);
+      const isAlt = q.acceptedAltAll || (q.acceptedAlt || []).includes(p);
+      if (!isOk && !isAlt) {
+        questionMistakes[q.id] = (questionMistakes[q.id] || 0) + 1;
+      }
+    });
+  });
+
+  const sorted = Object.entries(questionMistakes)
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
+
+  if (sorted.length === 0) {
+    $('hardest-list').innerHTML = '<div class="empty-state">所有題目均全對！</div>';
+    return;
+  }
+
+  const html = sorted.map(([qid, wrongCount], idx) => {
+    const q = questions.find(item => item.id === qid);
+    const rate = Math.round((wrongCount / allSubmissions.length) * 100);
+    const rankClass = idx === 0 ? 'top1' : idx === 1 ? 'top2' : idx === 2 ? 'top3' : '';
+    const stemPreview = q ? q.stem.substring(0, 36).replace(/\n/g, ' ') + '...' : '';
+    return `
+      <div class="ranking-item">
+        <div class="ranking-item-left">
+          <span class="rank-badge ${rankClass}">${idx + 1}</span>
+          <div>
+            <b>第 ${q ? q.no : qid} 題</b>
+            <span style="font-size: 12.5px; color: var(--ink-soft); display: block;">${stemPreview}</span>
+          </div>
+        </div>
+        <span class="wrong-rate">答錯率 ${rate}% (${wrongCount}人)</span>
+      </div>
+    `;
+  }).join('');
+
+  $('hardest-list').innerHTML = html;
+}
+
+function renderTable(list) {
+  $('table-count-label').textContent = `共 ${list.length} 筆紀錄`;
+  if (list.length === 0) {
+    $('submissions-tbody').innerHTML = '<tr><td colspan="9" class="empty-state">無符合搜尋條件的考生紀錄</td></tr>';
+    return;
+  }
+
+  const rows = list.map(item => {
+    const dt = item.created_at ? item.created_at.replace('T', ' ').substring(0, 19) : '--';
+    const score = Number(item.total_score) || 0;
+    const isPass = score >= 60;
+    return `
+      <tr>
+        <td style="font-family: ui-monospace, Menlo, monospace; font-size: 13px; color: var(--ink-soft);">${dt}</td>
+        <td><b>${escapeHtml(item.examinee_name || '未具名')}</b></td>
+        <td><span class="tag-score ${isPass ? 'pass' : 'fail'}">${score} 分</span></td>
+        <td>${item.pass_rate || 0}%</td>
+        <td><span class="pill pill-ok">${item.ok_count || 0}</span></td>
+        <td><span class="pill pill-alt">${item.alt_count || 0}</span></td>
+        <td><span class="pill pill-bad">${item.bad_count || 0}</span></td>
+        <td><span style="color: #94a3b8;">${item.unanswered_count || 0}</span></td>
+        <td><button type="button" class="btn" style="padding: 4px 10px; font-size: 12px;" onclick="openDetail('${item.id}')">🔍 查看明細</button></td>
+      </tr>
+    `;
+  }).join('');
+
+  $('submissions-tbody').innerHTML = rows;
+}
+
+function openDetail(id) {
+  const item = allSubmissions.find(s => s.id === id);
+  if (!item) return;
+
+  $('modal-title').textContent = `考生作答明細 · ${item.examinee_name || '未具名'}`;
+  $('modal-summary').innerHTML = `
+    <div style="display: flex; gap: 20px; flex-wrap: wrap;">
+      <div><b>提交時間：</b>${item.created_at ? item.created_at.replace('T', ' ').substring(0, 19) : '--'}</div>
+      <div><b>測驗成績：</b><span style="color: var(--accent); font-weight: 700; font-size: 16px;">${item.total_score} 分</span></div>
+      <div><b>正確率：</b>${item.pass_rate}%</div>
+      <div><b>答對：</b>${item.ok_count} 題 ｜ <b>勉予：</b>${item.alt_count} 題 ｜ <b>答錯：</b>${item.bad_count} 題 ｜ <b>未答：</b>${item.unanswered_count} 題</div>
+    </div>
+  `;
+
+  if (OFFICIAL_DATA) {
+    const picks = item.picks || {};
+    const cells = OFFICIAL_DATA.questions.map(q => {
+      const pick = picks[q.id];
+      let cls = 'is-none';
+      let statusText = '未答';
+      if (pick) {
+        if (q.answer.includes(pick)) {
+          cls = 'is-ok';
+          statusText = pick;
+        } else if (q.acceptedAltAll || (q.acceptedAlt || []).includes(pick)) {
+          cls = 'is-alt';
+          statusText = `${pick} (勉)`;
+        } else {
+          cls = 'is-bad';
+          statusText = pick;
+        }
+      }
+      return `
+        <div class="pick-cell ${cls}" title="第 ${q.no} 題 | 正解: ${q.answer.join(',')}">
+          <div class="q-no">Q${q.no}</div>
+          <div class="q-ans">${statusText}</div>
+        </div>
+      `;
+    }).join('');
+    $('modal-picks-grid').innerHTML = cells;
+  }
+
+  $('detail-modal').classList.remove('hidden');
+}
+
+function exportCsv() {
+  if (allSubmissions.length === 0) {
+    alert('目前尚無資料可匯出！');
+    return;
+  }
+  let csv = "\uFEFF作答時間,考生姓名,測驗年度,總得分,正確率(%),官方正解數,勉予給分,答錯題數,未作答題數\n";
+  allSubmissions.forEach(r => {
+    const time = (r.created_at || '').replace('T', ' ').substring(0, 19);
+    const name = `"${(r.examinee_name || '未具名').replace(/"/g, '""')}"`;
+    csv += `${time},${name},${r.year || '109'},${r.total_score || 0},${r.pass_rate || 0},${r.ok_count || 0},${r.alt_count || 0},${r.bad_count || 0},${r.unanswered_count || 0}\n`;
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `EMT-P_109_考生作答名冊_${new Date().toISOString().slice(0,10)}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+}
+
+// 搜尋過濾
+$('search-input').addEventListener('input', (e) => {
+  const kw = e.target.value.trim().toLowerCase();
+  if (!kw) {
+    renderTable(allSubmissions);
+    return;
+  }
+  const filtered = allSubmissions.filter(s => (s.examinee_name || '').toLowerCase().includes(kw));
+  renderTable(filtered);
+});
+
+$('btn-refresh').onclick = fetchSubmissions;
+$('btn-export-csv').onclick = exportCsv;
+$('modal-close').onclick = () => $('detail-modal').classList.add('hidden');
+$('detail-modal').onclick = (e) => {
+  if (e.target === $('detail-modal')) $('detail-modal').classList.add('hidden');
+};
+
+fetchSubmissions();
+</script>
+</body>
+</html>
