@@ -30,8 +30,105 @@ body {
   color: var(--ink);
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Noto Sans TC", sans-serif;
   line-height: 1.6;
+  min-height: 100vh;
 }
+.hidden { display: none !important; }
 .wrap { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+/* 密碼驗證鎖 Gate */
+.auth-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+  background: linear-gradient(135deg, #1c2b3a 0%, #0f172a 100%);
+}
+.auth-box {
+  background: #ffffff;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+  width: 100%;
+  max-width: 420px;
+  padding: 36px 30px;
+  text-align: center;
+  animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.auth-icon {
+  width: 60px;
+  height: 60px;
+  background: #fff7ed;
+  border: 2px solid #fdba74;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  margin-bottom: 16px;
+}
+.auth-box h2 {
+  margin: 0 0 8px;
+  font-size: 21px;
+  color: #1c2b3a;
+}
+.auth-box p {
+  margin: 0 0 22px;
+  font-size: 14px;
+  color: var(--ink-soft);
+  line-height: 1.6;
+}
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.auth-input {
+  width: 100%;
+  padding: 12px 16px;
+  font-size: 15px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  outline: none;
+  font-family: inherit;
+  transition: .15s;
+}
+.auth-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(192, 86, 33, 0.15);
+}
+.auth-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: .15s;
+}
+.auth-btn:hover { background: #a8471a; }
+.auth-error {
+  color: var(--bad);
+  font-size: 13.5px;
+  font-weight: 600;
+  background: var(--bad-bg);
+  padding: 8px;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+.auth-back {
+  display: inline-block;
+  margin-top: 18px;
+  font-size: 13px;
+  color: var(--ink-soft);
+  text-decoration: none;
+}
+.auth-back:hover { text-decoration: underline; color: var(--accent); }
 
 /* Top Header */
 .header {
@@ -82,6 +179,7 @@ body {
 .header-actions {
   display: flex;
   gap: 10px;
+  align-items: center;
 }
 .btn {
   font: inherit;
@@ -102,6 +200,8 @@ body {
 .btn:hover { background: #f1f5f9; }
 .btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
 .btn.primary:hover { background: #a8471a; }
+.btn.danger { background: #fff; border-color: #fca5a5; color: var(--bad); }
+.btn.danger:hover { background: #fee2e2; }
 
 /* Metrics Cards */
 .metrics-grid {
@@ -394,122 +494,141 @@ table.data-table tr:hover td { background: #f8fafc; }
 </head>
 <body>
 
-<header class="header">
-  <div class="wrap header-row">
-    <div>
-      <h1>📊 EMT-P 甄試考古題 · 後台數據儀表板 <span class="badge-live">即時連線</span></h1>
-      <p style="margin: 4px 0 0; font-size: 13.5px; opacity: 0.85;">衛生福利部 109 年度高級救護技術員甄試筆試 · 考生作答雲端資料庫</p>
-    </div>
-    <div class="header-actions">
-      <a href="index.html" class="btn">← 返回測驗前端</a>
-      <button type="button" id="btn-refresh" class="btn">🔄 重新整理</button>
-      <button type="button" id="btn-export-csv" class="btn primary">📥 匯出 CSV 報表</button>
-    </div>
+<!-- 密碼登入驗證層 (未輸入正確密碼前完全隱藏後台數據) -->
+<div id="auth-gate" class="auth-wrapper">
+  <div class="auth-box">
+    <div class="auth-icon">🔒</div>
+    <h2>管理員身分驗證</h2>
+    <p>此頁面為 EMT-P 測驗管理後台數據，包含全體考生成績名冊與作答分析。請輸入管理員密碼以繼續：</p>
+    <form class="auth-form" id="auth-form" onsubmit="return handleLogin(event);">
+      <input type="password" id="auth-password" class="auth-input" placeholder="請輸入管理密碼" autofocus required />
+      <button type="submit" class="auth-btn">驗證解鎖 ➔</button>
+      <div id="auth-error" class="auth-error hidden">⚠️ 密碼錯誤，請重新輸入！</div>
+    </form>
+    <a href="index.html" class="auth-back">← 返回學員測驗頁面</a>
   </div>
-</header>
+</div>
 
-<main class="wrap">
+<!-- 後台數據儀表板本體 (通過驗證後才顯示並讀取資料) -->
+<div id="dashboard-view" class="hidden">
+  <header class="header">
+    <div class="wrap header-row">
+      <div>
+        <h1>📊 EMT-P 甄試考古題 · 後台數據儀表板 <span class="badge-live">即時連線</span></h1>
+        <p style="margin: 4px 0 0; font-size: 13.5px; opacity: 0.85;">衛生福利部 109 年度高級救護技術員甄試筆試 · 考生作答雲端資料庫</p>
+      </div>
+      <div class="header-actions">
+        <a href="index.html" class="btn">← 返回測驗前端</a>
+        <button type="button" id="btn-refresh" class="btn">🔄 重新整理</button>
+        <button type="button" id="btn-export-csv" class="btn primary">📥 匯出 CSV 報表</button>
+        <button type="button" id="btn-logout" class="btn danger" onclick="handleLogout();">🔒 登出後台</button>
+      </div>
+    </div>
+  </header>
 
-  <!-- Summary Cards -->
-  <section class="metrics-grid">
-    <div class="metric-card">
-      <div class="metric-title">總測驗人次</div>
-      <div class="metric-val" id="val-total-count">--</div>
-      <div class="metric-sub">累計提交卷數</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-title">全體平均得分</div>
-      <div class="metric-val" id="val-avg-score">--</div>
-      <div class="metric-sub">滿分 100 分</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-title">最高得分 / 最低得分</div>
-      <div class="metric-val" id="val-min-max">-- / --</div>
-      <div class="metric-sub" id="val-pass-rate">及格率（≥60分）：--%</div>
-    </div>
-    <div class="metric-card">
-      <div class="metric-title">資料庫狀態</div>
-      <div class="metric-val" style="font-size: 20px; color: var(--ok); margin-top: 6px;">🟢 連線正常</div>
-      <div class="metric-sub">Supabase PostgreSQL</div>
-    </div>
-  </section>
+  <main class="wrap">
 
-  <!-- Charts & Analytics -->
-  <section class="charts-grid">
-    <div class="panel">
+    <!-- Summary Cards -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-title">總測驗人次</div>
+        <div class="metric-val" id="val-total-count">--</div>
+        <div class="metric-sub">累計提交卷數</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">全體平均得分</div>
+        <div class="metric-val" id="val-avg-score">--</div>
+        <div class="metric-sub">滿分 100 分</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">最高得分 / 最低得分</div>
+        <div class="metric-val" id="val-min-max">-- / --</div>
+        <div class="metric-sub" id="val-pass-rate">及格率（≥60分）：--%</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-title">資料庫狀態</div>
+        <div class="metric-val" style="font-size: 20px; color: var(--ok); margin-top: 6px;">🟢 連線正常</div>
+        <div class="metric-sub">Supabase PostgreSQL</div>
+      </div>
+    </section>
+
+    <!-- Charts & Analytics -->
+    <section class="charts-grid">
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">📈 考生得分區間分佈</h2>
+        </div>
+        <div class="dist-chart" id="dist-chart">
+          <div class="empty-state">載入數據中...</div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="panel-header">
+          <h2 class="panel-title">⚠️ 全卷最易錯題目 Top 5</h2>
+        </div>
+        <div class="ranking-list" id="hardest-list">
+          <div class="empty-state">載入數據中...</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detailed Examinee Table -->
+    <section class="panel">
       <div class="panel-header">
-        <h2 class="panel-title">📈 考生得分區間分佈</h2>
+        <h2 class="panel-title">📋 考生完整作答名冊</h2>
+        <span style="font-size: 13.5px; color: var(--ink-soft);" id="table-count-label">共 0 筆紀錄</span>
       </div>
-      <div class="dist-chart" id="dist-chart">
-        <div class="empty-state">載入數據中...</div>
+
+      <div class="toolbar-row">
+        <input type="text" id="search-input" class="search-input" placeholder="🔍 搜尋考生姓名..." />
+        <div style="font-size: 13px; color: var(--ink-soft);">
+          依作答提交時間倒序排列
+        </div>
       </div>
-    </div>
 
-    <div class="panel">
-      <div class="panel-header">
-        <h2 class="panel-title">⚠️ 全卷最易錯題目 Top 5</h2>
+      <div class="table-responsive">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>作答時間</th>
+              <th>考生姓名</th>
+              <th>總得分</th>
+              <th>正確率</th>
+              <th>答對</th>
+              <th>勉予給分</th>
+              <th>答錯</th>
+              <th>未答</th>
+              <th>操作</th>
+            </tr>
+          </thead>
+          <tbody id="submissions-tbody">
+            <tr><td colspan="9" class="empty-state">載入中...</td></tr>
+          </tbody>
+        </table>
       </div>
-      <div class="ranking-list" id="hardest-list">
-        <div class="empty-state">載入數據中...</div>
+    </section>
+
+  </main>
+
+  <!-- Details Modal -->
+  <div id="detail-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 id="modal-title" style="margin: 0;">考生作答明細</h3>
+        <button type="button" class="modal-close" id="modal-close">&times;</button>
       </div>
-    </div>
-  </section>
-
-  <!-- Detailed Examinee Table -->
-  <section class="panel">
-    <div class="panel-header">
-      <h2 class="panel-title">📋 考生完整作答名冊</h2>
-      <span style="font-size: 13.5px; color: var(--ink-soft);" id="table-count-label">共 0 筆紀錄</span>
-    </div>
-
-    <div class="toolbar-row">
-      <input type="text" id="search-input" class="search-input" placeholder="🔍 搜尋考生姓名..." />
-      <div style="font-size: 13px; color: var(--ink-soft);">
-        依作答提交時間倒序排列
+      <div class="modal-body">
+        <div id="modal-summary" style="margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 8px;"></div>
+        <h4 style="margin: 0 0 6px;">全 100 題作答矩陣 (點選題目可對照)：</h4>
+        <div style="display: flex; gap: 10px; font-size: 12px; margin-bottom: 10px;">
+          <span class="pill pill-ok">■ 完全答對</span>
+          <span class="pill pill-alt">■ 勉予給分</span>
+          <span class="pill pill-bad">■ 答錯</span>
+          <span class="pill" style="background:#f1f5f9; color:#64748b;">■ 未作答</span>
+        </div>
+        <div id="modal-picks-grid" class="picks-grid"></div>
       </div>
-    </div>
-
-    <div class="table-responsive">
-      <table class="data-table">
-        <thead>
-          <tr>
-            <th>作答時間</th>
-            <th>考生姓名</th>
-            <th>總得分</th>
-            <th>正確率</th>
-            <th>答對</th>
-            <th>勉予給分</th>
-            <th>答錯</th>
-            <th>未答</th>
-            <th>操作</th>
-          </tr>
-        </thead>
-        <tbody id="submissions-tbody">
-          <tr><td colspan="9" class="empty-state">載入中...</td></tr>
-        </tbody>
-      </table>
-    </div>
-  </section>
-
-</main>
-
-<!-- Details Modal -->
-<div id="detail-modal" class="modal-overlay hidden">
-  <div class="modal-content">
-    <div class="modal-header">
-      <h3 id="modal-title" style="margin: 0;">考生作答明細</h3>
-      <button type="button" class="modal-close" id="modal-close">&times;</button>
-    </div>
-    <div class="modal-body">
-      <div id="modal-summary" style="margin-bottom: 16px; background: #f8fafc; padding: 12px; border-radius: 8px;"></div>
-      <h4 style="margin: 0 0 6px;">全 100 題作答矩陣 (點選題目可對照)：</h4>
-      <div style="display: flex; gap: 10px; font-size: 12px; margin-bottom: 10px;">
-        <span class="pill pill-ok">■ 完全答對</span>
-        <span class="pill pill-alt">■ 勉予給分</span>
-        <span class="pill pill-bad">■ 答錯</span>
-        <span class="pill" style="background:#f1f5f9; color:#64748b;">■ 未作答</span>
-      </div>
-      <div id="modal-picks-grid" class="picks-grid"></div>
     </div>
   </div>
 </div>
@@ -517,6 +636,54 @@ table.data-table tr:hover td { background: #f8fafc; }
 <script src="questions-data.js"></script>
 <script>
 'use strict';
+
+// 預設管理員密碼雜湊值（SHA-256 of "emtp109admin"）
+const ADMIN_HASH = "0dbd96fc5980929060009cfe29c27bc52e73bb6b56c631cf22b451bd0cb42b93";
+const AUTH_KEY = "emtp_admin_session_auth";
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+}
+
+async function handleLogin(e) {
+  if (e) e.preventDefault();
+  const input = document.getElementById('auth-password');
+  const errorEl = document.getElementById('auth-error');
+  const pass = input.value.trim();
+  const hashed = await sha256(pass);
+
+  if (hashed === ADMIN_HASH || pass === "emtp109admin") {
+    sessionStorage.setItem(AUTH_KEY, "authenticated");
+    errorEl.classList.add('hidden');
+    unlockDashboard();
+  } else {
+    errorEl.classList.remove('hidden');
+    input.value = '';
+    input.focus();
+  }
+  return false;
+}
+
+function handleLogout() {
+  sessionStorage.removeItem(AUTH_KEY);
+  location.reload();
+}
+
+function checkAuthOnLoad() {
+  if (sessionStorage.getItem(AUTH_KEY) === "authenticated") {
+    unlockDashboard();
+  } else {
+    document.getElementById('auth-gate').classList.remove('hidden');
+    document.getElementById('dashboard-view').classList.add('hidden');
+  }
+}
+
+function unlockDashboard() {
+  document.getElementById('auth-gate').classList.add('hidden');
+  document.getElementById('dashboard-view').classList.remove('hidden');
+  fetchSubmissions();
+}
 
 const SUPABASE_CONFIG = {
   url: 'https://bqonwayoxmzdqmbmvfrv.supabase.co',
@@ -621,7 +788,7 @@ function renderHardestQuestions() {
   }
 
   const questions = OFFICIAL_DATA.questions;
-  const questionMistakes = {}; // { '109-001': count }
+  const questionMistakes = {};
 
   allSubmissions.forEach(sub => {
     const picks = sub.picks || {};
@@ -766,7 +933,6 @@ function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
-// 搜尋過濾
 $('search-input').addEventListener('input', (e) => {
   const kw = e.target.value.trim().toLowerCase();
   if (!kw) {
@@ -784,7 +950,8 @@ $('detail-modal').onclick = (e) => {
   if (e.target === $('detail-modal')) $('detail-modal').classList.add('hidden');
 };
 
-fetchSubmissions();
+// 進入頁面先檢查登入狀態
+checkAuthOnLoad();
 </script>
 </body>
 </html>
