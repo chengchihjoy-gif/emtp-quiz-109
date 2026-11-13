@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>EMT-P 考古題練習</title>
+<meta name="description" content="衛生福利部 109 年度高級救護技術員甄試筆試題目卷練習（工作坊示範）">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<header class="topbar">
+  <div class="wrap">
+    <span class="eyebrow">KHB-01 · AI 工作坊示範</span>
+    <h1>EMT-P 甄試考古題練習</h1>
+    <p class="sub">高級救護技術員甄試筆試 ｜ <span id="year-label">…</span> ｜ 共 <b id="total">…</b> 題</p>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <aside class="notice" role="note">
+    <p><b>練習用；題目來源：衛生福利部 109 年度高級救護技術員甄試筆試題目卷（台灣急診醫學會公開版）</b></p>
+    <p class="links" id="source-links"></p>
+  </aside>
+
+  <nav id="years" class="years" aria-label="選擇年度"></nav>
+
+  <section class="panel" id="quiz">
+    <div class="toolbar">
+      <label class="jump">題號
+        <select id="jump" aria-label="跳到第幾題"></select>
+      </label>
+      <span id="score" class="score" aria-live="polite"></span>
+    </div>
+    <div class="bar"><div id="bar-fill"></div></div>
+
+    <p id="origin" class="origin"></p>
+    <p id="review" class="review hidden"></p>
+    <p id="stem" class="stem"></p>
+    <div id="figures" class="figures"></div>
+    <div id="choices" class="choices" role="group" aria-label="選項"></div>
+
+    <div id="feedback" class="feedback hidden" aria-live="polite"></div>
+    <div id="explain-box" class="explain-card hidden" aria-live="polite"></div>
+
+    <div class="actions">
+      <button id="prev" class="btn" type="button">← 上一題</button>
+      <button id="toggle-explain" class="btn secondary" type="button">💡 查看本題詳解</button>
+      <button id="next" class="btn primary" type="button">下一題 →</button>
+    </div>
+  </section>
+
+</main>
+
+<footer class="foot wrap">
+  <p>題目、選項與答案由腳本從官方 PDF 擷取，答案一律照答案卷；括號內為勉予給分。本站<b>附 AI 起草詳解（標註需人工查證）</b>。</p>
+  <p>含圖的題目（心電圖、波形、照片）另附原卷截圖，標「需人工確認」。如有出入，以原始 PDF 為準。</p>
+  <p class="tiny">工作坊示範用，非官方題庫。</p>
+</footer>
+
+<script src="questions-data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
