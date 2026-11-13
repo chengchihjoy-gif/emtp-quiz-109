@@ -557,28 +557,6 @@ body{
   flex-wrap: wrap;
   margin-top: 10px;
 }
-
-/* Supabase 雲端同步狀態 */
-.sync-status {
-  margin: 12px 0 16px;
-  padding: 10px 14px;
-  border-radius: 8px;
-  font-size: 14px;
-  background: #f0f7f4;
-  border: 1px solid #b7dfca;
-  color: #165b37;
-  text-align: center;
-}
-.sync-status.loading {
-  background: #fdf8eb;
-  border-color: #ebd4bb;
-  color: #855b30;
-}
-.sync-status.error {
-  background: #fbeae9;
-  border-color: #f1bdbb;
-  color: var(--bad);
-}
 .btn.danger {
   background: #fff;
   border-color: #e5a4a2;
