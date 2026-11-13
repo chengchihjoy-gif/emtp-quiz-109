@@ -238,3 +238,348 @@ body{
   flex: 1;
   line-height: 1.5;
 }
+
+/* 測試人員標籤 */
+.user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 13.5px;
+  cursor: pointer;
+  transition: .15s;
+}
+.user-chip:hover {
+  border-color: var(--accent);
+  background: #fff;
+}
+.user-chip-label {
+  color: var(--ink-soft);
+  font-size: 12px;
+}
+.user-chip-name {
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* 第一頁：考生登錄與測驗說明 */
+.intro-page {
+  animation: fadeIn 0.25s ease-in-out;
+  padding: 10px 4px;
+}
+.intro-header {
+  margin-bottom: 22px;
+}
+.intro-tag {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 3px 10px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  letter-spacing: .05em;
+}
+.intro-header h2 {
+  margin: 0 0 10px;
+  font-size: 24px;
+  color: var(--ink);
+  line-height: 1.4;
+}
+.intro-desc {
+  font-size: 15.5px;
+  color: var(--ink-soft);
+  margin: 0;
+  line-height: 1.7;
+}
+
+.name-box {
+  background: #fdf6ec;
+  border: 1.5px solid #ebd4bb;
+  border-radius: 10px;
+  padding: 18px 20px;
+  margin-bottom: 24px;
+}
+.name-box-label {
+  display: block;
+  font-weight: 700;
+  font-size: 16px;
+  color: #633c16;
+  margin-bottom: 10px;
+}
+.name-box-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+.name-input {
+  flex: 1;
+  font: inherit;
+  font-size: 16px;
+  padding: 10px 14px;
+  border: 1.5px solid #d4b896;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  outline: none;
+  transition: .15s;
+}
+.name-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(192, 86, 33, 0.15);
+}
+.name-box-hint {
+  font-size: 13px;
+  color: #855b30;
+  margin: 8px 0 0;
+}
+
+.intro-rules {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+.intro-rules h3 {
+  margin: 0 0 10px;
+  font-size: 17px;
+  color: var(--ink);
+}
+.intro-rules ul {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 15px;
+  line-height: 1.8;
+  color: var(--ink-soft);
+}
+.intro-rules li {
+  margin-bottom: 6px;
+}
+.intro-rules b {
+  color: var(--ink);
+}
+
+.intro-btn-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.btn-lg {
+  padding: 13px 28px;
+  font-size: 17px;
+  font-weight: 700;
+}
+
+/* 增加的最後一頁：測驗完成結算頁 */
+.result-page {
+  animation: fadeIn 0.25s ease-in-out;
+  padding: 6px 2px;
+}
+.congrat-card {
+  text-align: center;
+  background: linear-gradient(135deg, #fdf6ec 0%, #faebe0 100%);
+  border: 2px solid #ecd0b9;
+  border-radius: 12px;
+  padding: 26px 18px 22px;
+  margin-bottom: 22px;
+}
+.congrat-badge {
+  display: inline-block;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 13px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+}
+.congrat-title {
+  margin: 0 0 8px;
+  font-size: 26px;
+  color: #8c3b10;
+  letter-spacing: .02em;
+}
+.congrat-sub {
+  margin: 0;
+  font-size: 15px;
+  color: #633c16;
+}
+
+.result-summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.2fr;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+.summary-box {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.summary-label {
+  font-size: 13px;
+  color: var(--ink-soft);
+  margin-bottom: 6px;
+}
+.summary-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--ink);
+  word-break: break-all;
+}
+.summary-score {
+  font-size: 32px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.1;
+  font-family: ui-monospace, Menlo, monospace;
+}
+.score-unit {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--ink-soft);
+}
+.summary-rate {
+  font-size: 14px;
+  color: var(--ink-soft);
+  margin-top: 4px;
+}
+.btn-text {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-size: 13px;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 6px;
+  text-align: left;
+}
+
+.stats-card {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-bottom: 22px;
+}
+.stat-pill {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 12px 10px;
+  text-align: center;
+}
+.stat-num {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  font-family: ui-monospace, Menlo, monospace;
+}
+.stat-text {
+  font-size: 12.5px;
+  color: var(--ink-soft);
+}
+.stat-pill.stat-ok { border-color: #b7dfca; background: #f0f7f4; }
+.stat-pill.stat-ok .stat-num { color: var(--ok); }
+.stat-pill.stat-alt { border-color: #e8d7a7; background: #fdf8eb; }
+.stat-pill.stat-alt .stat-num { color: var(--alt); }
+.stat-pill.stat-bad { border-color: #f1bdbb; background: #fbeae9; }
+.stat-pill.stat-bad .stat-num { color: var(--bad); }
+.stat-pill.stat-empty { border-color: #ddd; background: #f5f5f5; }
+.stat-pill.stat-empty .stat-num { color: #888; }
+
+.mistakes-container {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin-bottom: 22px;
+}
+.mistakes-container h3 {
+  margin: 0 0 6px;
+  font-size: 16.5px;
+  color: var(--ink);
+}
+.mistakes-hint {
+  font-size: 13.5px;
+  color: var(--ink-soft);
+  margin: 0 0 12px;
+}
+.mistakes-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding: 2px;
+}
+.mistake-chip {
+  font-family: ui-monospace, Menlo, monospace;
+  font-size: 13.5px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid var(--line);
+  background: #fff;
+  cursor: pointer;
+  transition: .12s;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.mistake-chip:hover {
+  border-color: var(--accent);
+  background: #fdf6ec;
+}
+.mistake-chip.bad {
+  border-color: #f1bdbb;
+  color: var(--bad);
+  background: #fdf2f2;
+}
+.mistake-chip.empty {
+  border-color: #ddd;
+  color: #777;
+  background: #f8f8f8;
+}
+
+.result-btn-group {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+.btn.danger {
+  background: #fff;
+  border-color: #e5a4a2;
+  color: var(--bad);
+}
+.btn.danger:hover:not(:disabled) {
+  background: #fbeae9;
+  border-color: var(--bad);
+}
+
+@media (max-width: 600px) {
+  .result-summary-grid {
+    grid-template-columns: 1fr;
+  }
+  .stats-card {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .congrat-title {
+    font-size: 21px;
+  }
+  .name-box-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
+
