@@ -34,7 +34,6 @@ const el = {
   statUnansweredCount: $('stat-unanswered-count'),
   mistakesContainer: $('review-mistakes-container'),
   mistakesList: $('mistakes-list'),
-  syncStatus: $('sync-status'),
   btnReviewQ1: $('btn-review-q1'),
   btnRestartQuiz: $('btn-restart-quiz'),
 
@@ -46,13 +45,6 @@ const KEYS = ['A', 'B', 'C', 'D'];
 const DATA = window.KHB_EMTP_QUIZ;
 const STORE = 'khb-emtp-quiz-109-v2';
 const LEGACY_STORE = 'khb-emtp-quiz-109-v1';
-
-// Supabase 後台資料庫設定（可透過 setup_supabase.py CLI 配置）
-const SUPABASE_CONFIG = {
-  url: '',
-  anonKey: ''
-};
-let lastSyncedHash = '';
 
 let year = null;
 let questions = [];
@@ -515,70 +507,6 @@ function renderResult() {
         btn.onclick = () => go(item.idx);
         return btn;
       }));
-    }
-  }
-
-  // 觸發 Supabase 雲端資料庫同步
-  syncToSupabase({
-    examinee_name: examineeName || '未具名考生',
-    year: String(year || '109'),
-    total_score: totalScore,
-    pass_rate: rate,
-    ok_count: okCount,
-    alt_count: altCount,
-    bad_count: badCount,
-    unanswered_count: unansweredCount,
-    picks: picks,
-    user_agent: navigator.userAgent
-  });
-}
-
-async function syncToSupabase(payload) {
-  if (!SUPABASE_CONFIG.url || !SUPABASE_CONFIG.anonKey) {
-    if (el.syncStatus) el.syncStatus.classList.add('hidden');
-    return;
-  }
-
-  const hash = JSON.stringify({ name: payload.examinee_name, score: payload.total_score, answered: 100 - payload.unanswered_count });
-  if (hash === lastSyncedHash) return;
-
-  if (el.syncStatus) {
-    el.syncStatus.className = 'sync-status loading';
-    el.syncStatus.innerHTML = '☁️ 正在將作答數據同步至 Supabase 雲端資料庫...';
-    el.syncStatus.classList.remove('hidden');
-  }
-
-  try {
-    const res = await fetch(`${SUPABASE_CONFIG.url.replace(/\/$/, '')}/rest/v1/quiz_submissions`, {
-      method: 'POST',
-      headers: {
-        'apikey': SUPABASE_CONFIG.anonKey,
-        'Authorization': `Bearer ${SUPABASE_CONFIG.anonKey}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'return=minimal'
-      },
-      body: JSON.stringify(payload)
-    });
-
-    if (res.ok) {
-      lastSyncedHash = hash;
-      if (el.syncStatus) {
-        el.syncStatus.className = 'sync-status';
-        el.syncStatus.innerHTML = '✅ 考生作答數據已成功上傳至 Supabase 後台資料庫！';
-      }
-    } else {
-      const errText = await res.text();
-      console.warn('Supabase sync warning:', res.status, errText);
-      if (el.syncStatus) {
-        el.syncStatus.className = 'sync-status error';
-        el.syncStatus.innerHTML = `⚠️ 雲端同步失敗 (HTTP ${res.status})，作答仍已安全存於本機。`;
-      }
-    }
-  } catch (err) {
-    console.error('Supabase sync network error:', err);
-    if (el.syncStatus) {
-      el.syncStatus.className = 'sync-status error';
-      el.syncStatus.innerHTML = '⚠️ 雲端連線異常，作答數據已安全保存在本機。';
     }
   }
 }
